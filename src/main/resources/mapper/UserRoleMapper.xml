@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nj.userrole.mapper.UserRoleMapper">
+    <!-- 增 -->
+    <insert id="insertUserRole" parameterType="com.nj.pojo.UserRoleInfo">
+        insert into User_ROLE
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            userRoleId,
+            <if test="urUserId != null and urUserId != '' " >
+                urUserId,
+            </if>
+            <if test="urRoleId != null and urRoleId != '' " >
+                urRoleId,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            SEQ_USERROLE.nextval,
+            <if test="urUserId != null and urUserId != '' " >
+                #{urUserId},
+            </if>
+            <if test="urRoleId != null and urRoleId != '' " >
+                #{urRoleId},
+            </if>
+        </trim>
+    </insert>
+    <!-- 删 -->
+    <delete id="deleteUserRoleById" parameterType="com.nj.pojo.UserRoleInfo" >
+        delete from USER_ROLE
+        where urUserId=#{urUserId} and urRoleId=#{urRoleId}
+    </delete>
+    <!-- 查 -->
+    <select id="selectUserRoleBy" parameterType="com.nj.pojo.UserRoleInfo" resultType="Integer">
+        select count (urUserId) from USER_ROLE where urUserId=#{urUserId}
+    </select>
+</mapper>

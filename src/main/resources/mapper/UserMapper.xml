@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    <mapper namespace="com.nj.userinfo.mapper.UserMapper">
+    <!-- 增 -->
+    <insert id="insertUserSelective" parameterType="com.nj.pojo.UserInfo">
+    insert into USER_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+            USERID,
+        <if test="accountName != null and accountName != '' " >
+            ACCOUNTNAME,
+        </if>
+        <if test="userName != null and userName != '' " >
+            USERNAME,
+        </if>
+        <if test="password != null and password != '' " >
+            PASSWORD,
+        </if>
+        <if test="email != null and email != '' " >
+            EMAIL,
+        </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+            SEQ_USERINFO.nextval,
+        <if test="accountName != null and accountName != '' " >
+            #{accountName,jdbcType=VARCHAR},
+        </if>
+        <if test="userName != null and userName != '' " >
+            #{userName,jdbcType=VARCHAR},
+        </if>
+        <if test="password != null and password != '' " >
+            #{password,jdbcType=VARCHAR},
+        </if>
+        <if test="email != null and email != '' " >
+            #{email,jdbcType=VARCHAR},
+        </if>
+    </trim>
+</insert>
+    <!-- 删 -->
+    <delete id="deleteUserById" parameterType="com.nj.pojo.UserInfo" >
+        delete from USER_INFO
+        where USERID = #{userId,jdbcType=INTEGER}
+    </delete>
+    <!-- 选择性修改 -->
+    <update id="updateUserByIdSelective" parameterType="com.nj.pojo.UserInfo" >
+        update USER_INFO
+        <set >
+            <if test="accountName != null" >
+                ACCOUNTNAME = #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null" >
+                USERNAME = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null" >
+                PASSWORD = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null" >
+                EMAIL = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="userState != null" >
+                USERSTATE = #{userState,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where USERID = #{userId,jdbcType=INTEGER}
+    </update>
+    <!-- 改所有 -->
+    <!--<update id="updateByPrimaryKey" parameterType="com.qf.pojo.UserInfo" >
+        update USER_INFO
+        set USERNAME = #{userName,jdbcType=VARCHAR},
+        PASSWORD = #{password,jdbcType=VARCHAR},
+        EMAIL = #{email,jdbcType=VARCHAR},
+        ACCOUNTNAME = #{accountName,jdbcType=VARCHAR}
+        where USERID = #{userId,jdbcType=DECIMAL}
+    </update>-->
+    <!-- 查所有 -->
+    <select id="selectUserAll" resultType="com.nj.pojo.UserInfo">
+        select * from USER_INFO order by userid asc
+    </select>
+    <!-- 选择性查询-->
+    <select id="selectUserSelective" parameterType="com.nj.pojo.UserInfo" resultType="com.nj.pojo.UserInfo">
+        select * from USER_INFO
+        <where>
+            <if test="userId != null and userId != ''">
+                AND userId = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND userName = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null and password != ''">
+                AND password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="accountName != null and accountName != ''">
+                AND accountName = #{accountName,jdbcType=VARCHAR}
+            </if>
+            <if test="email != null and email != ''">
+                AND email = #{email,jdbcType=VARCHAR}
+            </if>
+            <if test="userState != null and userState != ''">
+                AND userState = #{userState,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <!-- 模糊查询 -->
+    <select id="selectUserByFuzzy" parameterType="com.nj.pojo.UserInfo" resultType="com.nj.pojo.UserInfo">
+        select * from USER_INFO
+            where accountName like concat(concat('%',#{accountName,jdbcType=VARCHAR}),'%')
+            or userName like concat(concat('%',#{accountName,jdbcType=VARCHAR}),'%')
+            or email like concat(concat('%',#{accountName,jdbcType=VARCHAR}),'%')
+    </select>
+</mapper>

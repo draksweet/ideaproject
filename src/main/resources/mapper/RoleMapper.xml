@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    <mapper namespace="com.nj.roleinfo.mapper.RoleMapper">
+    <!-- 增 -->
+    <insert id="insertRoleSelective" parameterType="com.nj.pojo.RoleInfo">
+        insert into ROLE_INFO
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            ROLEID,
+            <if test="roleName != null and roleName != '' " >
+                ROLENAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            SEQ_ROLEINFO.nextval,
+            <if test="roleName != null and roleName != '' " >
+                #{roleName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!-- 删 -->
+    <delete id="deleteRoleById" parameterType="com.nj.pojo.RoleInfo" >
+        delete from ROLE_INFO
+        where ROLEID = #{roleId,jdbcType=INTEGER}
+    </delete>
+    <!-- 选择性修改 -->
+    <update id="updateRoleByIdSelective" parameterType="com.nj.pojo.RoleInfo" >
+        update ROLE_INFO
+        <set >
+            <if test="roleName != null" >
+                ROLENAME = #{roleName,jdbcType=VARCHAR},
+            </if>
+            <if test="roleState != null" >
+                ROLESTATE = #{roleState,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ROLEID = #{roleId,jdbcType=INTEGER}
+    </update>
+    <!-- 查所有 -->
+    <select id="selectRoleAll" resultType="com.nj.pojo.RoleInfo">
+        select * from ROLE_INFO order by roleid asc
+    </select>
+    <!-- 选择性查询-->
+    <select id="selectRoleSelective" parameterType="com.nj.pojo.RoleInfo" resultType="com.nj.pojo.RoleInfo">
+        select * from ROLE_INFO
+        <where>
+            <if test="roleId != null and roleId != ''">
+                AND roleId = #{roleId,jdbcType=VARCHAR}
+            </if>
+            <if test="roleName != null and roleName != ''">
+                AND roleName = #{roleName,jdbcType=VARCHAR}
+            </if>
+            <if test="roleState != null and roleState != ''">
+                AND roleState = #{roleState,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <!-- 未分配角色查询 -->
+        <select id="selectUDRole" parameterType="com.nj.pojo.RoleInfo" resultType="com.nj.pojo.RoleInfo">
+            SELECT role2.* FROM ROLE_INFO role2 where role2.ROLEID not in
+            (select role.roleid from role_info role right OUTER JOIN
+            (select ur.* from USER_ROLE ur right outer join
+            (select userid from user_info where userid=#{roleId,jdbcType=INTEGER} )u
+            on ur.uruserid in u.userid)uur on role.roleid in uur.urroleid)
+        </select>
+    <!-- 已分配角色查询 -->
+    <select id="selectDRole" parameterType="com.nj.pojo.RoleInfo" resultType="com.nj.pojo.RoleInfo">
+            select role.* from role_info role right OUTER JOIN
+            (select ur.* from USER_ROLE ur right outer join
+            (select userid from user_info where userid=#{roleId,jdbcType=INTEGER} )u
+            on ur.uruserid in u.userid)uur on role.roleid in uur.urroleid
+        </select>
+    <!-- 模糊查询 -->
+    <select id="selectRoleByFuzzy" parameterType="com.nj.pojo.RoleInfo" resultType="com.nj.pojo.RoleInfo">
+        select * from ROLE_INFO
+            where roleName like concat(concat('%',#{roleName,jdbcType=VARCHAR}),'%')
+    </select>
+</mapper>
